@@ -1,0 +1,18 @@
+no-permission: "&7No permission"
+no-number: "&7That is not a number"
+peaks:
+  - "&7=== &aPeaks &7==="
+  - ""
+  - "%format%"
+  - ""
+  - "&7=== &aPeaks &7==="
+  - "&cThis plugin is in &nbeta&r&c, please report any malfunctions to NormaalBart#7435"
+format:
+  - "  &8- &7%date%&8:"
+  - "    &8- &7Total joined players: &a%peak_total_joined% unique players"
+  - "    &8- &7Peak: &a%peak_players% &7players &8(&a%peak_date%&8)"
+  - "    &8- &7Average Players: &a%peak_average_players% &7players"
+# Date formats: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+# When putted in wrongly, the plugin will error most likely.
+date-format: "yyyy.MM.dd"
+date-format-peak: "HH:mm:ss"

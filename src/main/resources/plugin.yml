@@ -1,0 +1,7 @@
+name: ServerPeak
+main: me.bartvv.serverpeak.ServerPeak
+version: 1.0.0
+author: Bart
+commands:
+  peak:
+    aliases: [serverpeak]
