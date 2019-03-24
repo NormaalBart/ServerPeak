@@ -21,7 +21,7 @@ import me.bartvv.serverpeak.DateUtil;
 @Builder
 public class Peak {
 
-	private Date date, peak;
+	private Date date, peak, peakEnd;
 	@Builder.Default
 	private List< UUID > joinedPlayers = Lists.newArrayList();
 	@Builder.Default
@@ -32,6 +32,7 @@ public class Peak {
 		Map< String, Object > map = Maps.newHashMap();
 		map.put( "date", this.date.getTime() );
 		map.put( "peak", this.peak.getTime() );
+		map.put( "peakEnd", this.peakEnd.getTime() );
 		map.put( "joinedPlayers", this.joinedPlayers.stream().map( UUID::toString ).collect( Collectors.toList() ) );
 		map.put( "AveragePlayers", this.averagePlayers );
 		map.put( "playersInPeak", this.playersInPeak );
@@ -41,6 +42,12 @@ public class Peak {
 	public static Peak deserialize( JsonObject jsonObject ) {
 		Date date = DateUtil.parseDate( jsonObject.get( "date" ).getAsLong() );
 		Date peak = new Date( jsonObject.get( "peak" ).getAsLong() );
+		Date peakEnd;
+		if ( jsonObject.has( "peakEnd" ) )
+			peakEnd = new Date( jsonObject.get( "peakEnd" ).getAsLong() );
+		else {
+			peakEnd = peak;
+		}
 		List< UUID > joinedPlayers = Lists.newArrayList();
 		jsonObject.get( "joinedPlayers" ).getAsJsonArray()
 				.forEach( jsonElement -> joinedPlayers.add( UUID.fromString( jsonElement.getAsString() ) ) );
@@ -49,16 +56,23 @@ public class Peak {
 		jsonObject.get( "AveragePlayers" ).getAsJsonArray()
 				.forEach( jsonElement -> averagePlayers.add( jsonElement.getAsInt() ) );
 		return Peak.builder().date( date ).peak( peak ).joinedPlayers( joinedPlayers ).playersInPeak( playersInPeak )
-				.averagePlayers( averagePlayers ).build();
+				.averagePlayers( averagePlayers ).peakEnd( peakEnd ).build();
 	}
 
 	public void handleJoin( Player player ) {
 		if ( !this.joinedPlayers.contains( player.getUniqueId() ) )
 			this.joinedPlayers.add( player.getUniqueId() );
-		if ( Bukkit.getOnlinePlayers().size() <= this.playersInPeak )
+		if ( Bukkit.getOnlinePlayers().size() <= this.playersInPeak ) {
+			this.peakEnd = new Date( System.currentTimeMillis() );
 			return;
+		}
 		this.peak = new Date( System.currentTimeMillis() );
 		this.playersInPeak = Bukkit.getOnlinePlayers().size();
+	}
+
+	public void handleQuit( Player player ) {
+		if ( Bukkit.getOnlinePlayers().size() - 1 < this.playersInPeak )
+			this.peakEnd = new Date( System.currentTimeMillis() );
 	}
 
 	public String getAveragePlayersAsString() {
@@ -68,4 +82,7 @@ public class Peak {
 				: String.format( "%.2f", total / size );
 	}
 
+	public Date getPeakEnd() {
+		return this.peak == null ? null : this.peakEnd == null ? new Date( System.currentTimeMillis() ) : this.peakEnd;
+	}
 }

@@ -1,0 +1,11 @@
+# Date formats: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+# When putted in wrongly, the plugin will error most likely.
+date-format: "yyyy.MM.dd"
+# The format of the peak.
+date-format-peak: "HH:mm:ss"
+# The time between the begin of the peak and end.
+format-begin-end: "HH 'hours,' mm 'minutes,' ss 'seconds'"
+# Every X times should the plugin check how many players their are online
+# The lower the accurator. But it needs more space...
+# This is in seconds.
+time-check: 15

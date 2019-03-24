@@ -64,7 +64,7 @@ public class PeakManager {
 				synchronized ( PeakManager.this.peaks ) {
 					Date date = DateUtil.parseDate( System.currentTimeMillis() );
 					if ( !PeakManager.this.peaks.containsKey( date ) ) {
-						Peak peak = Peak.builder().date( date ).peak( date ).playersInPeak( 0 ).build();
+						Peak peak = Peak.builder().date( date ).playersInPeak( 0 ).build();
 						Bukkit.getOnlinePlayers().forEach( peak::handleJoin );
 						PeakManager.this.peaks.put( date, peak );
 					}
@@ -77,7 +77,7 @@ public class PeakManager {
 					this.lastSaved = System.currentTimeMillis();
 				}
 			}
-		}, 0, TimeUnit.MINUTES.toMillis( 1 ) );
+		}, 0, TimeUnit.SECONDS.toMillis( this.serverPeak.getConfig().getInt( "time-check" ) ) );
 	}
 
 	public Peak getPeak() {

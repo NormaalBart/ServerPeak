@@ -1,8 +1,11 @@
 package me.bartvv.serverpeak.commands;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,8 +21,8 @@ public class Commandpeak implements CommandExecutor {
 	private SimpleDateFormat date, peak;
 
 	public Commandpeak init() {
-		this.date = new SimpleDateFormat( this.serverPeak.getMessages().getString( "date-format" ) );
-		this.peak = new SimpleDateFormat( this.serverPeak.getMessages().getString( "date-format-peak" ) );
+		this.date = new SimpleDateFormat( this.serverPeak.getConfig().getString( "date-format" ) );
+		this.peak = new SimpleDateFormat( this.serverPeak.getConfig().getString( "date-format-peak" ) );
 		return this;
 	}
 
@@ -47,18 +50,26 @@ public class Commandpeak implements CommandExecutor {
 				formatBuilder.append( format.replace( "%date%", this.date.format( peak.getDate() ) )
 						.replace( "%peak_total_joined%", peak.getJoinedPlayers().size() + "" )
 						.replace( "%peak_players%", peak.getPlayersInPeak() + "" )
-						.replace( "%peak_date%", this.peak.format( peak.getPeak() ) )
-						.replace( "%peak_average_players%", peak.getAveragePlayersAsString() ) + "\n" );
+						.replace( "%peak_date%", peak.getPeak() == null ? "none" : this.peak.format( peak.getPeak() ) )
+						.replace( "%peak_average_players%", peak.getAveragePlayersAsString() )
+						.replace( "%peak_end%",
+								peak.getPeakEnd() == null ? "none: " : this.peak.format( peak.getPeakEnd() ) )
+						.replace( "%peak_end_total_time%", formatTime( peak.getPeak(), peak.getPeakEnd() ) ) + "\n" );
 			}
 		}
 
-		for ( String string : this.serverPeak.getMessages().getStringList( "peaks" ) ) {
-			if ( string.contains( "%format%" ) )
-				string = string.replace( "%format%", formatBuilder.toString() );
-
-			sender.sendMessage( string );
-		}
+		this.serverPeak.getMessages().getStringList( "peaks" ).stream()
+				.map( string -> string.replace( "%format%", formatBuilder.toString() ) )
+				.forEachOrdered( sender::sendMessage );
 		return true;
+	}
+
+	public String formatTime( Date begin, Date end ) {
+		if ( begin == null )
+			return "none";
+		Duration duration = Duration.between( begin.toInstant(), end.toInstant() );
+		return DurationFormatUtils.formatDuration( duration.toMillis(),
+				this.serverPeak.getConfig().getString( "format-begin-end" ), true );
 	}
 
 }

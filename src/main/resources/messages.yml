@@ -10,9 +10,8 @@ peaks:
 format:
   - "  &8- &7%date%&8:"
   - "    &8- &7Total joined players: &a%peak_total_joined% unique players"
-  - "    &8- &7Peak: &a%peak_players% &7players &8(&a%peak_date%&8)"
+  - "    &8- &7Peak: &a%peak_players% &7players"
+  - "      &8- &7Peak date: &a%peak_date%"
+  - "      &8- &7Peak end: &a%peak_end%"
+  - "      &8- &7Total time of peak: &a%peak_end_total_time%"
   - "    &8- &7Average Players: &a%peak_average_players% &7players"
-# Date formats: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
-# When putted in wrongly, the plugin will error most likely.
-date-format: "yyyy.MM.dd"
-date-format-peak: "HH:mm:ss"
